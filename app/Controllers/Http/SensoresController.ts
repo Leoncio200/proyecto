@@ -1,5 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-
+import Event from '@ioc:Adonis/Core/Event';
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
 export default class SensoresController {
@@ -70,7 +70,7 @@ export default class SensoresController {
     const collection = db.collection('SensoresInformacion');
 
     const insertResult = await collection.insertOne(sensor);
-
+    Event.emit('message', 'se añadio un sensor')
     return response.status(201).json(insertResult.ops);
 }
 
@@ -86,7 +86,7 @@ public async deleteSensor({ params, response }: HttpContextContract) {
     if (deleteResult.deletedCount === 0) {
     return response.status(404).json({ message: 'Sensor no encontrado.' });
 }
-
+    Event.emit('message', 'se elimino un sensor')
     return response.status(200).json({ message: 'Sensor eliminado correctamente.' });
 }
 
@@ -119,7 +119,7 @@ public async actualizarSensor({ request, response }: HttpContextContract){
     if (updateResult.matchedCount === 0) {
     return response.status(404).json({ message: 'Sensor no encontrado.' });
 }
-
+    Event.emit('message', 'se actualizo un sensor')
     return response.status(200).json({ message: 'Sensor actualizado correctamente.' });
 }
 

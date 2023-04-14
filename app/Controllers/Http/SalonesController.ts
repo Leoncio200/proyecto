@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import Event from '@ioc:Adonis/Core/Event';
 export default class SalonesController {
     url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
     client = new MongoClient(this.url);
@@ -31,6 +32,7 @@ export default class SalonesController {
             const collection = db.collection('Salones');
             
             const insertResult = await collection.insertOne(sensor);
+            Event.emit('message', 'se agrego un salon')
             console.log(sensor)
         }
 
@@ -47,7 +49,7 @@ export default class SalonesController {
             if (deleteResult.deletedCount === 0) {
               return response.status(404).json({ message: 'Salon no encontrado.' });
             }
-          
+            Event.emit('message', 'se elimino un salon')
             return response.status(200).json({ message: 'Salon eliminado correctamente.' });
           }
 
@@ -81,7 +83,7 @@ export default class SalonesController {
             if (updateResult.matchedCount === 0) {
               return response.status(404).json({ message: 'Salon no encontrado.' });
             }
-          
+            Event.emit('message', 'se actualizo un salon')
             return response.status(200).json({ message: 'Salon actualizado correctamente.' });
           }
 }
