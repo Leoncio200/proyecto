@@ -47,7 +47,7 @@ Route.put('/usuario/:id', 'CambiarController.CambiarUsuario').where('id', /^[0-9
 Route.delete('/usuario/:id', 'BorrarController.borrarUsuario').where('id', /^[0-9]+$/).middleware(['Rol:1']);
 
 }).prefix('api/v2').middleware(['auth:api', 'status'])
-
+Route.get('/stream','LoginController.serverSentStream');
 Route.post('/api/insertvalues',async () => {
   Event.emit('message', 'Hola mundo')
 })
