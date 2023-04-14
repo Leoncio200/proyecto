@@ -62,6 +62,7 @@ Route.get('/api/v2/sensores/:id', 'SensoresController.obtenerDatos')//obtenerDat
 Route.get('api/v2/salones', 'SalonesController.obtenerSalones').middleware(['auth']);//mostarsalones
 
 
+
 Route.post('api/v2/salones/add', 'SalonesController.addSalon').middleware(['auth']);//insertarSalones
 Route.delete('api/v2/salones/:id', 'SalonesController.deleteSalon');//eliminarSalones
 Route.get('/api/v2/salones/UP/:id', 'SalonesController.obtenerSalon')//obtenerSalon
