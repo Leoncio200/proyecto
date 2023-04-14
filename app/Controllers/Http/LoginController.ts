@@ -3,6 +3,8 @@ import User from 'App/Models/User'
 import Hash from '@ioc:Adonis/Core/Hash'
 import { schema, rules } from '@ioc:Adonis/Core/Validator';
 import Correo from 'App/Mailers/Correo'
+import Event from '@ioc:Adonis/Core/Event';
+import { Readable } from 'stream';
 
 export default class LoginController {
     axios = require ('axios')
@@ -137,4 +139,22 @@ export default class LoginController {
         })
       }   
     }
+
+    public async serverSentStream({ response }) {
+        response.response.setHeader('content-type','text/event-stream')
+        response.response.setHeader('Access-Control-Allow-Origin','*')
+        response.response.setHeader("Cache-Control","no-cache")
+        response.response.setHeader( "Connection", "keep-alive")
+        const stream = new Readable({read(){}})
+        response.response.write(':open\n\n')
+
+           // Agregamos datos al objeto Readable y enviamos el evento SSE
+        stream.push('data: hay cambios\n\n')
+        response.response.write(stream.read())
+
+        Event.on('message',(msj)=>{
+          stream.push(`data: ${msj} emit!\n\n`)
+          response.response.write(stream.read())
+        })
+      }
 }
