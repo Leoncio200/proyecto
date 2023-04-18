@@ -63,13 +63,30 @@ export default class SensoresController {
     }
 
     public async addSensor({ request, response, auth }: HttpContextContract){
-    const sensor = request.all();
+    const sensores = request.input("sensores");
+    const object = request.params();
 
     await this.client.connect();
     const db = this.client.db(this.dbName);
     const collection = db.collection('SensoresInformacion');
+    
+    const colecion = db.collection('Salones');
+    const findResult = await colecion.findOne({ _id: new ObjectId(object.id) });
 
-    const insertResult = await collection.insertOne(sensor);
+    if(!findResult)
+    return response.status(404).json({
+        message: 'No se encontro el salon',
+        mm: findResult
+    });
+
+
+    
+
+    for (var i = 0; i < sensores.length; i++) {
+        sensores[i].salon = findResult;
+    }
+
+    const insertResult = await collection.insertMany(sensores);
     Event.emit('message', 'se añadio un sensor')
     return response.status(201).json(insertResult.ops);
 }
