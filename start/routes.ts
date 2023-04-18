@@ -63,7 +63,7 @@ Route.get('api/v2/salones', 'SalonesController.obtenerSalones').middleware(['aut
 
 
 
-Route.post('api/v2/salones/add', 'SalonesController.addSalon').middleware(['auth']);//insertarSalones
+Route.post('api/v2/salones', 'SalonesController.addSalon').middleware(['auth']);//insertarSalones
 Route.delete('api/v2/salones/:id', 'SalonesController.deleteSalon');//eliminarSalones
 Route.get('/api/v2/salones/UP/:id', 'SalonesController.obtenerSalon')//obtenerSalon
 Route.put('/api/v2/salones/:id', 'SalonesController.actualizarSalon')//actualizarSensor
