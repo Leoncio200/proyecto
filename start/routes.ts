@@ -51,7 +51,7 @@ Route.get('/stream','LoginController.serverSentStream');
 Route.post('/api/insertvalues',async () => {
   Event.emit('message', 'Hola mundo')
 })
-Route.get('api/v2/sensores', 'SensoresController.sensores');//mostarsensores
+Route.get('api/v2/sensores/:id', 'SensoresController.sensores');//mostarsensores
 Route.post('api/v2/sensores', 'SensoresController.addSensor');//insertarSensores
 Route.delete('api/v2/sensores/:id', 'SensoresController.deleteSensor');//eliminarSensores
 Route.get('/api/v2/sensores/UP/:id', 'SensoresController.obtenerSensor')//obtenerSensor
@@ -63,7 +63,7 @@ Route.get('api/v2/salones', 'SalonesController.obtenerSalones').middleware(['aut
 
 
 
-Route.post('api/v2/salones/add', 'SalonesController.addSalon').middleware(['auth']);//insertarSalones
+Route.post('api/v2/salones', 'SalonesController.addSalon').middleware(['auth']);//insertarSalones
 Route.delete('api/v2/salones/:id', 'SalonesController.deleteSalon');//eliminarSalones
 Route.get('/api/v2/salones/UP/:id', 'SalonesController.obtenerSalon')//obtenerSalon
 Route.put('/api/v2/salones/:id', 'SalonesController.actualizarSalon')//actualizarSensor
