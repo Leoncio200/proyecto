@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import Event from '@ioc:Adonis/Core/Event';
 export default class SalonesController {
-    url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
+    url = 'mongodb://admin:1234@54.163.191.225/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0&authMechanism=DEFAULT';
     client = new MongoClient(this.url);
     dbName = 'Sensores';
 
