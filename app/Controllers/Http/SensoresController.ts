@@ -3,7 +3,7 @@ import Event from '@ioc:Adonis/Core/Event';
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
 export default class SensoresController {
-    url = 'mongodb://admin:1234@54.163.191.225/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0&authMechanism=DEFAULT';
+    url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
     client = new MongoClient(this.url);
     dbName = 'Sensores';
     
@@ -11,12 +11,13 @@ export default class SensoresController {
         await this.client.connect();
         const db = this.client.db(this.dbName);
         const collection = db.collection('SensoresInformacion');
-
-        const findResult = await collection.find({}).toArray();
-        // the following code examples can be pasted here...
-
+      
+        const id = request.param('id');
+        const findResult = await collection.find({ id }).toArray();
+      
         return findResult;
-    }
+      }
+      
 
     public async tipoSensor ({ request, response }: HttpContextContract){
         await this.client.connect();
@@ -80,8 +81,6 @@ export default class SensoresController {
     });
 
 
-    
-
     for (var i = 0; i < sensores.length; i++) {
         sensores[i].salon = findResult;
     }
@@ -144,7 +143,7 @@ public async actualizarSensor({ request, response }: HttpContextContract){
 
 
 public async obtenerDatos({ params, response }: HttpContextContract){
-    const url = 'mongodb://admin:1234@54.163.191.225/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0&authMechanism=DEFAULT';
+    const url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
     const client = new MongoClient(url);
     const dbName = 'Sensores';
 
