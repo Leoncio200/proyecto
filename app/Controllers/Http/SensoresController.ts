@@ -151,7 +151,7 @@ public async actualizarSensor({ request, response }: HttpContextContract){
 
 
 
-public async obtenerDatos({ params, response }: HttpContextContract){
+public async obtenerDatos({ params, response }: HttpContextContract) {
     const url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
     const client = new MongoClient(url);
     const dbName = 'Sensores';
@@ -161,13 +161,18 @@ public async obtenerDatos({ params, response }: HttpContextContract){
     const collection = db.collection('sensoresDatos');
 
     const id = params.id;
-    const sensor = await collection.findOne({ "sensor._id": id });
+    const sensor = await collection.find({ type: id })
+        .sort({ fecha_creacion: -1 })
+        .limit(1)
+        .toArray();
 
-    if(!sensor){
+    if(sensor.length === 0){
         return response.status(404).json({ message: 'Sensor no encontrado' });
     }
-    this.client.close();
+    sensor[0].unidad = sensor[0].sensor.unidad;
+    await client.close();    
 
-    return response.json(sensor);
-    }
+    return response.json(sensor[0]);
+}
+
 }
