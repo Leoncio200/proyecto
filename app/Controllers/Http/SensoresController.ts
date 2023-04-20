@@ -3,7 +3,7 @@ import Event from '@ioc:Adonis/Core/Event';
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
 export default class SensoresController {
-    url = 'mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1';
+    url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
     client = new MongoClient(this.url);
     dbName = 'Sensores';
     
@@ -15,6 +15,7 @@ export default class SensoresController {
         const id = request.param('id');
         const findResult = await collection.find({ id }).toArray();
       
+        this.client.close();
         return findResult;
       }
       
@@ -26,7 +27,7 @@ export default class SensoresController {
 
         const findResult = await collection.find({ tipo: "temperatura" }).toArray();
         // the following code examples can be pasted here...
-
+        this.client.close();
         return findResult;
     }
 
@@ -44,6 +45,7 @@ export default class SensoresController {
             return response.status(404).json({ message: 'Sensor no encontrado.' });
         }
     
+        this.client.close();
         return response.status(200).json({ message: 'Sensor actualizado correctamente.' });
     }
 
@@ -60,6 +62,7 @@ export default class SensoresController {
             return response.status(404).json({ message: 'Sensor no encontrado.' });
         }
 
+        this.client.close();
         return response.status(200).json(findResult);
     }
 
@@ -87,6 +90,7 @@ export default class SensoresController {
 
     const insertResult = await collection.insertMany(sensores);
     Event.emit('message', 'se añadio un sensor')
+    this.client.close();
     return response.status(201).json(insertResult.ops);
 }
 
@@ -103,6 +107,8 @@ public async deleteSensor({ params, response }: HttpContextContract) {
     return response.status(404).json({ message: 'Sensor no encontrado.' });
 }
     Event.emit('message', 'se elimino un sensor')
+
+    this.client.close();
     return response.status(200).json({ message: 'Sensor eliminado correctamente.' });
 }
 
@@ -119,6 +125,7 @@ public async obtenerSensor({ params, response }: HttpContextContract) {
     return response.status(404).json({ message: 'Sensor no encontrado.' });
 }
 
+this.client.close();
     return response.status(200).json(sensor);
 }
 
@@ -136,6 +143,8 @@ public async actualizarSensor({ request, response }: HttpContextContract){
     return response.status(404).json({ message: 'Sensor no encontrado.' });
 }
     Event.emit('message', 'se actualizo un sensor')
+
+    this.client.close();
     return response.status(200).json({ message: 'Sensor actualizado correctamente.' });
 }
 
@@ -143,7 +152,7 @@ public async actualizarSensor({ request, response }: HttpContextContract){
 
 
 public async obtenerDatos({ params, response }: HttpContextContract){
-    const url = 'mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1';
+    const url = 'mongodb+srv://Leoncio:Leoncio2@cluster0.kk3lull.mongodb.net/?retryWrites=true&w=majority';
     const client = new MongoClient(url);
     const dbName = 'Sensores';
 
@@ -157,6 +166,7 @@ public async obtenerDatos({ params, response }: HttpContextContract){
     if(!sensor){
         return response.status(404).json({ message: 'Sensor no encontrado' });
     }
+    this.client.close();
 
     return response.json(sensor);
     }
