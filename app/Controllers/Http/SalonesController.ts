@@ -12,12 +12,18 @@ export default class SalonesController {
           await this.client.connect();
           const db = this.client.db(this.dbName);
           const collection = db.collection('Salones');
-          const findResult = await collection.find({"user.id": Number(auth.user?.id)}).toArray();
+          const pipeline = [
+              { $match: { "user.id": Number(auth.user?.id) } },
+              { $sort: { ubicacion: 1 } } // Ordenar por nombre en orden ascendente
+          ];
+          const findResult = await collection.aggregate(pipeline).toArray();
           return findResult;
       } finally {
           await this.client.close();
       }
-  }
+    }
+    
+  
   
   public async addSalon ({ request, response, auth }: HttpContextContract){
       try {
@@ -52,20 +58,42 @@ export default class SalonesController {
   }
   
   public async obtenerSalon({ params, response }: HttpContextContract) {
-      try {
-          const { id } = params;
-          await this.client.connect();
-          const db = this.client.db(this.dbName);
-          const collection = db.collection('Salones');
-          const sensor = await collection.findOne({ _id: new ObjectId(id) });
-          if (!sensor) {
-              return response.status(404).json({ message: 'Salon no encontrado.' });
+    try {
+        const { id } = params;
+        await this.client.connect();
+        const db = this.client.db(this.dbName);
+        const collection = db.collection('Salones');
+        const pipeline = [
+          {
+            $match: { _id: new ObjectId(id) }
+          },
+          {
+            $lookup: {
+              from: 'Sensores',
+              localField: '_id',
+              foreignField: 'salonId',
+              as: 'sensores'
+            }
+          },
+          {
+            $addFields: {
+              numSensores: { $size: '$sensores' }
+            }
+          },
+          {
+            $sort: { nombre: 1 }
           }
-          return response.status(200).json(sensor);
-      } finally {
-          await this.client.close();
-      }
+        ];
+        const sensor = await collection.aggregate(pipeline).toArray();
+        if (sensor.length === 0) {
+            return response.status(404).json({ message: 'Salon no encontrado.' });
+        }
+        return response.status(200).json(sensor[0]);
+    } finally {
+        await this.client.close();
+    }
   }
+  
   
   public async actualizarSalon({ request, response }: HttpContextContract){
       try {

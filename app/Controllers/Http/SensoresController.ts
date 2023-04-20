@@ -7,17 +7,31 @@ export default class SensoresController {
     client = new MongoClient(this.url);
     dbName = 'Sensores';
     
-    public async sensores ({ request, response }: HttpContextContract){
-        await this.client.connect();
-        const db = this.client.db(this.dbName);
-        const collection = db.collection('SensoresInformacion');
-      
-        const id = request.param('id');
-        const findResult = await collection.find({ id }).toArray();
-      
-        this.client.close();
-        return findResult;
-      }
+    public async sensores({ request, response }: HttpContextContract) {
+        try {
+          await this.client.connect();
+          const db = this.client.db(this.dbName);
+          const collection = db.collection('SensoresInformacion');
+          
+          // Creamos el índice para ordenar por nombre (si no existe)
+          await collection.createIndex({ nombre: 1 });
+    
+          const id = request.param('id');
+    
+          const aggregationPipeline = [
+            { $match: { id: id } },
+            { $sort: { nombre: 1 } } // Ordenamos por nombre (1: ascendente, -1: descendente)
+          ];
+    
+          const aggregationResult = await collection.aggregate(aggregationPipeline).toArray();
+    
+          this.client.close();
+          return response.json(aggregationResult);
+        } catch (error) {
+          console.log(error);
+          return response.status(500).json({ message: 'Error interno del servidor' });
+        }
+    }
       
 
     public async tipoSensor ({ request, response }: HttpContextContract){
@@ -114,20 +128,25 @@ public async deleteSensor({ params, response }: HttpContextContract) {
 
 public async obtenerSensor({ params, response }: HttpContextContract) {
     const { id } = params;
-
+  
     await this.client.connect();
     const db = this.client.db(this.dbName);
     const collection = db.collection('SensoresInformacion');
-
-    const sensor = await collection.findOne({ _id: new ObjectId(id) });
-
-    if (!sensor) {
-    return response.status(404).json({ message: 'Sensor no encontrado.' });
-}
-
-this.client.close();
-    return response.status(200).json(sensor);
-}
+  
+    const pipeline = [
+      { $match: { _id: new ObjectId(id) } },
+      { $sort: { nombre: 1 } }
+    ];
+    const sensor = await collection.aggregate(pipeline).toArray();
+  
+    if (!sensor.length) {
+      return response.status(404).json({ message: 'Sensor no encontrado.' });
+    }
+  
+    this.client.close();
+    return response.status(200).json(sensor[0]);
+  }
+  
 
 public async actualizarSensor({ request, response }: HttpContextContract){
     const { id } = request.params();
