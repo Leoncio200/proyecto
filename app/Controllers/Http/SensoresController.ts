@@ -3,7 +3,7 @@ import Event from '@ioc:Adonis/Core/Event';
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
 export default class SensoresController {
-    url = 'mongodb://admin:1234@54.163.191.225/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0&authMechanism=DEFAULT';
+    url = 'mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1';
     client = new MongoClient(this.url);
     dbName = 'Sensores';
     
@@ -129,7 +129,7 @@ public async actualizarSensor({ request, response }: HttpContextContract){
     await this.client.connect();
     const db = this.client.db(this.dbName);
     const collection = db.collection('SensoresInformacion');
-
+    
     const updateResult = await collection.updateOne({ _id: new ObjectId(id) }, { $set: sensor });
 
     if (updateResult.matchedCount === 0) {
@@ -143,7 +143,7 @@ public async actualizarSensor({ request, response }: HttpContextContract){
 
 
 public async obtenerDatos({ params, response }: HttpContextContract){
-    const url = 'mongodb://admin:1234@54.163.191.225/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.8.0&authMechanism=DEFAULT';
+    const url = 'mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1';
     const client = new MongoClient(url);
     const dbName = 'Sensores';
 
